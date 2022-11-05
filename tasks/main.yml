@@ -15,20 +15,6 @@
    # limitations under the License.                                           #
    # ######################################################################## #
 
-#- name: Refetch replacement instance info
-#  delegate_to: localhost
-#  community.aws.ec2_instance_info:
-#    instance_ids:
-#      - 'i-0dd82eff8d609390e'
-#  register: replacement_instance
-#
-#- name: Show replacement instance info again
-#  debug:
-#    var: replacement_instance
-#
-#- fail:
-#    msg: "stop here"
-
 # Find the RHEL 6 ELS AMI and register variables for it
 - include_tasks: rhel_6_els_ami.yml
   # provides var:rhel_6_els_ami
@@ -36,10 +22,6 @@
 - name: Gather the instance information for use in the instance swap
   include_tasks: get_instance_information.yml
   # provides rhel6_instance_... for details related to the donor
-
-#- name: create an isolated vpc for the instance cloning
-#  include_tasks: build_isolated_vpc.yml
-  # provides donor_instance_info
 
 # We cannot loop over a block so we have to loop over a single include
 - name: Migrate an instance
@@ -49,14 +31,3 @@
   loop: '{{ donor_instances_info.instances }}'
   loop_control:
     loop_var: instance_index
-
-#- name: Create a rhel-6-els target instance
-#  include_tasks: launch_rhel_6_els_instance.yml
-  
-#- name: Create a surrogate instance
-#  include_tasks: initalize_surrogate_instance.yml
-  
-#   notify: set the instance id as a fact
-#     # (needed for stop/start action)
-#   notify: set the root_volume as a fact
-#     # (needed for snapshot actions)
